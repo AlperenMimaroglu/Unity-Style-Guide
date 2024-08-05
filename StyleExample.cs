@@ -18,7 +18,7 @@
 
 // FORMATTING:
 // - 4 space indenting. No tabs.
-// - Choose K&R (opening curly braces on same line) or Allman (opening curly braces on a new line) style braces.
+// - Use Allman (opening curly braces on a new line) style braces.
 // - Keep lines short. Consider horizontal whitespace. Define a standard line width in your style guide (80-120 characters). 
 // - Use a single space before flow control conditions, e.g. while (x == y)
 // - Avoid spaces inside brackets, e.g. x = dataArray[index]
@@ -29,7 +29,8 @@
 // - MonoBehaviours always has [AddComponentMenu]
 
 // COMMENTS:
-// - Rather than simply answering "what" or "how," comments can fill in the gaps and tell us "why."
+// - Don't explain how the code works or what it does.
+// - If something is out of ordinary explain WHY it is that way.
 // - Use the // comment to keep the explanation next to the logic.
 // - Use a Tooltip instead of a comment for serialized fields. 
 // - Avoid Regions. They encourage large class sizes. Collapsed code is more difficult to read. 
@@ -51,6 +52,10 @@
 // - protected members
 // - private members
 // - interface members
+
+// LITERALS:
+// - Always use string interpolion
+// - Float format is fully qualified 0.0f. Not .0f or 0F.
 
 // USING LINES:
 // - Keep using lines at the top of your file.
@@ -126,6 +131,8 @@ namespace StyleSheetExample
         // - Use Pascal case for public fields. Use camel case for private variables.
         // - Don't use prefixes such as _, m_, k_ etc.
         // - Omit the default access modifier;
+        // - Always prefer to fully qualify the name of the member, like using value instead of val or element instead of el.
+        // - Generics names should be also fully qualified, in simple Generics we use T K U V, then TValue TKey TData and also ClassType, Interface, BaseType etc.
 
         int elapsedTimeInDays;
 
@@ -220,10 +227,11 @@ namespace StyleSheetExample
             }
         }
 
-
         // METHODS:
         // - Start a methods name with a verbs or verb phrases to show an action.
         // - Parameter names are camel case.
+        // - If applicable prefer local methods rather than creating single use methods
+        // - Methods that are not implemented are to be marked with throw new NotImplementedException(); rather than using "placeholder" value.
 
         // Methods start with a verb.
         public void SetInitialPosition(float x, float y, float z)
