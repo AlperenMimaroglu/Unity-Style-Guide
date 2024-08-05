@@ -17,6 +17,7 @@
 // - If you have a Monobehaviour in a file, the source file name must match. 
 
 // FORMATTING:
+// - 4 space indenting. No tabs.
 // - Choose K&R (opening curly braces on same line) or Allman (opening curly braces on a new line) style braces.
 // - Keep lines short. Consider horizontal whitespace. Define a standard line width in your style guide (80-120 characters). 
 // - Use a single space before flow control conditions, e.g. while (x == y)
@@ -25,6 +26,7 @@
 // - Don’t add a space after the parenthesis and function arguments, e.g. CollectItem(myObject, 0, 1);
 // - Don’t use spaces between a function name and parenthesis, e.g. DropPowerUp(myPrefab, 0, 1);
 // - Use vertical spacing (extra blank line) for visual separation. 
+// - MonoBehaviours always has [AddComponentMenu]
 
 // COMMENTS:
 // - Rather than simply answering "what" or "how," comments can fill in the gaps and tell us "why."
@@ -34,14 +36,30 @@
 // - Use a link to an external reference for legal information or licensing to save space.
 // - Use a summary XML tag in front of public methods or functions for output documentation/Intellisense.
 
+// ORDERING
+// - Fields
+// - Properties
+// - Constructors
+// - Methods (public/interface methods)
+// - Base Methods (Unity methods)
+// - Support Methods
+
+// MEMBER ORDERING
+// - Constant members
+// - Static members
+// - Public members
+// - protected members
+// - private members
+// - interface members
 
 // USING LINES:
 // - Keep using lines at the top of your file.
 // - Remove unsed lines.
+// - Order namespaces alphabetically
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 // NAMESPACES:
 // - Pascal case, without special symbols or underscores.
@@ -49,7 +67,6 @@ using System;
 // - Create sub-namespaces with the dot (.) operator, e.g. MyApplication.GameFlow, MyApplication.AI, etc.
 namespace StyleSheetExample
 {
-
     // ENUMS:
     // - Use a singular type name.
     // - No prefix or suffix.
@@ -102,31 +119,29 @@ namespace StyleSheetExample
     // - One Monobehaviour per file. If you have a Monobehaviour in a file, the source file name must match. 
     public class StyleExample : MonoBehaviour
     {
-
         // FIELDS: 
         // - Avoid special characters (backslashes, symbols, Unicode characters); these can interfere with command line tools.
         // - Use nouns for names, but prefix booleans with a verb.
         // - Use meaningful names. Make names searchable and pronounceable. Don’t abbreviate (unless it’s math).
         // - Use Pascal case for public fields. Use camel case for private variables.
-        // - Add an underscore (_) in front of private fields to differentiate from local variables
-        // - You can alternatively use more explicit prefixes: m_ = member variable, s_ = static, k_ = const
-        // - Specify (or omit) the default access modifier; just be consistent with your style guide.
+        // - Don't use prefixes such as _, m_, k_ etc.
+        // - Omit the default access modifier;
 
-        private int _elapsedTimeInDays;
+        int elapsedTimeInDays;
 
         // Use [SerializeField] attribute if you want to display a private field in Inspector.
         // Booleans ask a question that can be answered true or false.
-        [SerializeField] private bool _isPlayerDead;
+        [SerializeField] bool isPlayerDead;
 
         // This groups data from the custom PlayerStats class in the Inspector.
-        [SerializeField] private PlayerStats _stats;
+        [SerializeField] PlayerStats stats;
 
         // This limits the values to a Range and creates a slider in the Inspector.
-        [Range(0f, 1f)] [SerializeField] private float _rangedStat;
+        [Range(0f, 1f)] [SerializeField] float rangedStat;
 
         // A tooltip can replace a comment on a serialized field and do double duty.
         [Tooltip("This is another statistic for the player.")]
-        [SerializeField] private float _anotherStat;
+        [SerializeField] float anotherStat;
 
 
         // PROPERTIES:
@@ -137,10 +152,11 @@ namespace StyleSheetExample
         // - Use the Auto-Implementated Property for a public property without a backing field.
 
         // the private backing field
-        private int _maxHealth;
+        int maxHealth;
 
         // read-only, returns backing field
-        public int MaxHealthReadOnly => _maxHealth;
+        // Prefer expression body when possible
+        public int MaxHealthReadOnly => maxHealth;
 
         // equivalent to:
         // public int MaxHealth { get; private set; }
@@ -148,15 +164,15 @@ namespace StyleSheetExample
         // explicitly implementing getter and setter
         public int MaxHealth
         {
-            get => _maxHealth;
-            set => _maxHealth = value;
+            get => maxHealth;
+            set => maxHealth = value;
         }
 
         // write-only (not using backing field)
         public int Health { private get; set; }
 
         // write-only, without an explicit setter
-        public void SetMaxHealth(int newMaxValue) => _maxHealth = newMaxValue;
+        public void SetMaxHealth(int newMaxValue) => maxHealth = newMaxValue;
 
         // auto-implemented property without backing field
         public string DescriptionName { get; set; } = "Fireball";
@@ -224,11 +240,13 @@ namespace StyleSheetExample
         private void FormatExamples(int someExpression)
         {
             // VAR:
-            // - Use var if it helps readability, especially with long type names.
-            // - Avoid var if it makes the type ambiguous.
+            // var is discouraged in general, one notable exception is 'using var' for requests that use automatic return to pool semantic (based on IDisposable).
             var powerUps = new List<PlayerStats>();
             var dict = new Dictionary<string, List<GameObject>>();
 
+            popupTask = new(); // BAD - what is the type?
+            popupTaks = new TaskCompletionSource<PopupResult>(); // GOOD
+            readonly Color defaultGimmieColor = new(1, 1, 1, defaultAlpha); // GOOD, it's Color
 
             // SWITCH STATEMENTS:
             // - The formatting can vary. Select one for your style guide and follow it.
@@ -246,12 +264,25 @@ namespace StyleSheetExample
                     break;
             }
 
+            // NULL:
+            // When checking if an UnityObject is null always use == to check. 
+            // That is due to the fact that while the object on the C++ side might be destroyed, the C# side ‘wrapper object’ might be alive and only be collected by the garbage collector later 
+            // https://mdium.com/@bwaynesu/til-unity-null-check-eb5609eb9bc9 for more info.
+
+            // PATTERN MATCHING:
+            // Conder using it when possible
+            
+            if (Shape is Square square)
+            {
+                square.Size();
+            }
+
             // BRACES: 
             // - Keep braces for clarity when using single-line statements.
-            // - Or avoid single-line statement entirely for debuggability.
+            // - Avoid single-line statement entirely for debuggability.
             // - Keep braces in nested multi-line statements.
 
-            // This single-line statement keeps the braces...
+            // This single-line statement keeps the braces... But can be hard to debug. Avoid
             for (int i = 0; i < 100; i++) { DoSomething(i); }
 
             // ... but this is more debuggable. You can set a breakpoint on the clause.
@@ -260,7 +291,7 @@ namespace StyleSheetExample
                 DoSomething(i);
             }
 
-            // Don't remove the braces here.
+            // Don't remove the braces here. Braces emphasize indenting.
             for (int i = 0; i < 10; i++)
             {
                 for (int j = 0; j < 10; j++)
@@ -286,5 +317,4 @@ namespace StyleSheetExample
         public int HitPoints;
         public bool HasHealthPotion;
     }
-
 }
